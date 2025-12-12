@@ -1,0 +1,2773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIFE MONEY ERAN ZONE BD - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8A2BE2;
+            --secondary: #00BFFF;
+            --success: #32CD32;
+            --danger: #DC143C;
+            --warning: #FF8C00;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --text: #333;
+            --text-light: #7f8c8d;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7ff;
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 350px;
+            width: 100%;
+        }
+        
+        .toast {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        .toast.info { border-left-color: var(--secondary); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Auth Container */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 100%);
+        }
+        
+        .auth-box {
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px 35px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .auth-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-title h2 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .auth-logo {
+            font-size: 60px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
+        }
+        
+        .auth-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, #6a11cb 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        /* App Container */
+        .app-container {
+            display: none;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #6a11cb 100%);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .menu-toggle {
+            font-size: 20px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .profile-icon {
+            font-size: 22px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            z-index: 200;
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #6a11cb 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 0 0 20px 0;
+        }
+        
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-title {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .menu-item:hover {
+            background: rgba(138, 43, 226, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active {
+            background: linear-gradient(135deg, var(--primary) 0%, #6a11cb 100%);
+            color: white;
+        }
+        
+        .menu-icon {
+            width: 25px;
+            font-size: 16px;
+            margin-right: 12px;
+        }
+        
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 25px;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+        
+        /* Pages */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin: 0 auto 15px;
+        }
+        
+        .card-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .card-label {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        /* Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d1ecf1; color: #0c5460; }
+        .status-banned { background: #721c24; color: white; }
+        
+        /* Action Buttons */
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+            transition: var(--transition);
+        }
+        
+        .btn-approve { background: var(--success); color: white; }
+        .btn-reject { background: var(--danger); color: white; }
+        .btn-activate { background: var(--success); color: white; }
+        .btn-deactivate { background: var(--warning); color: white; }
+        .btn-ban { background: #721c24; color: white; }
+        .btn-unban { background: var(--secondary); color: white; }
+        .btn-view { background: var(--primary); color: white; }
+        .btn-telegram { background: #0088cc; color: white; }
+        .btn-add-balance { background: #28a745; color: white; }
+        
+        /* Control Panel */
+        .control-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .control-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .control-section h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .control-section h3 i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .toggle-label {
+            flex: 1;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Price Input */
+        .price-input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .price-label {
+            flex: 1;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .price-input {
+            width: 120px;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: right;
+        }
+        
+        .price-suffix {
+            margin-left: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Search Box */
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        /* User Modal */
+        .user-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-modal.active {
+            display: flex;
+        }
+        
+        .user-modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Balance Modal */
+        .balance-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .balance-modal.active {
+            display: flex;
+        }
+        
+        .balance-modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        /* Telegram Modal */
+        .telegram-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .telegram-modal.active {
+            display: flex;
+        }
+        
+        .telegram-modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 20px;
+            }
+            
+            .card {
+                padding: 15px 10px;
+            }
+            
+            .card-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            .card-value {
+                font-size: 18px;
+            }
+            
+            .card-label {
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .auth-box {
+                padding: 30px 25px;
+            }
+            
+            .auth-title h2 {
+                font-size: 24px;
+            }
+            
+            .auth-logo {
+                font-size: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Authentication Section -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-box" id="loginBox">
+            <div class="auth-title">
+                <div class="auth-logo">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h2>Admin Panel Login</h2>
+                <p>Enter admin credentials to continue</p>
+            </div>
+            
+            <div class="error-message" id="loginError" style="display: none; background: #ffeaea; color: var(--danger); padding: 10px; border-radius: 8px; margin-bottom: 15px;"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Admin Username</label>
+                    <input type="text" id="loginUsername" required placeholder="Enter admin username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter admin password">
+                </div>
+                
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login as Admin
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main App Container -->
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <div class="header">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo"><i class="fas fa-user-shield"></i> ADMIN PANEL</div>
+            <div class="profile-icon" id="userProfile">
+                <i class="fas fa-user-cog"></i>
+            </div>
+        </div>
+        
+        <!-- Sidebar Overlay -->
+        <div class="overlay" id="overlay"></div>
+        
+        <!-- Sidebar Menu -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div style="display: flex; align-items: center;">
+                    <div class="profile-info">
+                        <h3>ADMIN PANEL <span class="status-badge status-active">Admin</span></h3>
+                        <span class="registration-date">Life Money Earn Zone BD</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">MAIN MENU</div>
+                <a href="#" class="menu-item active" data-page="dashboard">
+                    <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <div>Dashboard</div>
+                </a>
+                <a href="#" class="menu-item" data-page="users">
+                    <div class="menu-icon"><i class="fas fa-users"></i></div>
+                    <div>All Users</div>
+                </a>
+                <a href="#" class="menu-item" data-page="activation-requests">
+                    <div class="menu-icon"><i class="fas fa-user-check"></i></div>
+                    <div>Activation Requests</div>
+                </a>
+                <a href="#" class="menu-item" data-page="submissions">
+                    <div class="menu-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <div>Account Submissions</div>
+                </a>
+                <a href="#" class="menu-item" data-page="withdraw-requests">
+                    <div class="menu-icon"><i class="fas fa-wallet"></i></div>
+                    <div>Withdraw Requests</div>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">CONTROL PANEL</div>
+                <a href="#" class="menu-item" data-page="work-control">
+                    <div class="menu-icon"><i class="fas fa-cogs"></i></div>
+                    <div>Work Control</div>
+                </a>
+                <a href="#" class="menu-item" data-page="price-control">
+                    <div class="menu-icon"><i class="fas fa-tags"></i></div>
+                    <div>Price Control</div>
+                </a>
+                <a href="#" class="menu-item" data-page="telegram-control">
+                    <div class="menu-icon"><i class="fab fa-telegram"></i></div>
+                    <div>Telegram Link</div>
+                </a>
+                <a href="#" class="menu-item" data-page="settings">
+                    <div class="menu-icon"><i class="fas fa-sliders-h"></i></div>
+                    <div>Settings</div>
+                </a>
+                <button class="logout-btn" id="logoutBtn" style="background: linear-gradient(135deg, var(--danger) 0%, #c0392b 100%); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 15px;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <h1 class="page-title">Admin Dashboard</h1>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--primary) 0%, #6a11cb 100%);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-value" id="totalUsers">0</div>
+                        <div class="card-label">Total Users</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--success) 0%, #28a745 100%);">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="card-value" id="activeUsers">0</div>
+                        <div class="card-label">Active Users</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--warning) 0%, #ffc107 100%);">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="card-value" id="pendingActivations">0</div>
+                        <div class="card-label">Pending Activations</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--secondary) 0%, #0093E9 100%);">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="card-value" id="pendingSubmissions">0</div>
+                        <div class="card-label">Pending Submissions</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--danger) 0%, #c0392b 100%);">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <div class="card-value" id="bannedUsers">0</div>
+                        <div class="card-label">Banned Users</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #00BFFF 0%, #1E90FF 100%);">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="card-value" id="totalWithdraw">0 ৳</div>
+                        <div class="card-label">Withdraw Requests</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="control-panel">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Activity</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivityBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noActivity" style="text-align: center; padding: 30px; color: var(--text-light); display: none;">
+                        <i class="fas fa-history" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>No recent activity</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Users Page -->
+            <div id="users" class="page">
+                <h1 class="page-title">All Users</h1>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="userSearch" placeholder="Search by name, email, username or phone...">
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Phone</th>
+                                <th>Referrals</th>
+                                <th>Status</th>
+                                <th>Balance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noUsers" style="text-align: center; padding: 30px; color: var(--text-light); display: none;">
+                    <i class="fas fa-users" style="font-size: 40px; margin-bottom: 10px;"></i>
+                    <p>No users found</p>
+                </div>
+            </div>
+            
+            <!-- Activation Requests Page -->
+            <div id="activation-requests" class="page">
+                <h1 class="page-title">Activation Requests</h1>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="activationSearch" placeholder="Search by name, phone or transaction ID...">
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Name</th>
+                                <th>Sender Number</th>
+                                <th>Transaction ID</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activationTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noActivations" style="text-align: center; padding: 30px; color: var(--text-light); display: none;">
+                    <i class="fas fa-user-check" style="font-size: 40px; margin-bottom: 10px;"></i>
+                    <p>No activation requests found</p>
+                </div>
+            </div>
+            
+            <!-- Submissions Page -->
+            <div id="submissions" class="page">
+                <h1 class="page-title">Account Submissions</h1>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="action-btn btn-view" id="filterAll" style="margin-right: 5px; background: var(--primary);">All</button>
+                    <button class="action-btn btn-view" id="filterGmail" style="margin-right: 5px; background: #EA4335;">Gmail</button>
+                    <button class="action-btn btn-view" id="filterFacebook" style="margin-right: 5px; background: #1877F2;">Facebook</button>
+                    <button class="action-btn btn-view" id="filterInstagram" style="background: #E4405F;">Instagram</button>
+                </div>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="submissionSearch" placeholder="Search by email, username or account...">
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Name</th>
+                                <th>Type</th>
+                                <th>Account/Email</th>
+                                <th>Password</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noSubmissions" style="text-align: center; padding: 30px; color: var(--text-light); display: none;">
+                    <i class="fas fa-clipboard-list" style="font-size: 40px; margin-bottom: 10px;"></i>
+                    <p>No submissions found</p>
+                </div>
+            </div>
+            
+            <!-- Withdraw Requests Page -->
+            <div id="withdraw-requests" class="page">
+                <h1 class="page-title">Withdraw Requests</h1>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="withdrawSearch" placeholder="Search by name or phone...">
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Name</th>
+                                <th>Wallet</th>
+                                <th>Amount</th>
+                                <th>Charge</th>
+                                <th>Receive</th>
+                                <th>Method</th>
+                                <th>Number</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="withdrawTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noWithdrawals" style="text-align: center; padding: 30px; color: var(--text-light); display: none;">
+                    <i class="fas fa-wallet" style="font-size: 40px; margin-bottom: 10px;"></i>
+                    <p>No withdraw requests found</p>
+                </div>
+            </div>
+            
+            <!-- Work Control Page -->
+            <div id="work-control" class="page">
+                <h1 class="page-title">Work Control Panel</h1>
+                
+                <div class="control-panel">
+                    <div class="control-section">
+                        <h3><i class="fas fa-envelope"></i> Gmail Sell Work</h3>
+                        <div class="toggle-container">
+                            <div class="toggle-label">Gmail Sell Work Status</div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleGmailWork">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 14px; margin-top: 10px;">When OFF, users cannot submit Gmail accounts. When ON, users can submit Gmail accounts.</p>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3><i class="fab fa-facebook"></i> Facebook Sell Work</h3>
+                        <div class="toggle-container">
+                            <div class="toggle-label">Facebook Sell Work Status</div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleFacebookWork">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 14px; margin-top: 10px;">When OFF, users cannot submit Facebook accounts. When ON, users can submit Facebook accounts.</p>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3><i class="fab fa-instagram"></i> Instagram Sell Work</h3>
+                        <div class="toggle-container">
+                            <div class="toggle-label">Instagram Sell Work Status</div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleInstagramWork">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 14px; margin-top: 10px;">When OFF, users cannot submit Instagram accounts. When ON, users can submit Instagram accounts.</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="auth-btn" id="saveWorkSettings" style="max-width: 200px;">
+                            <i class="fas fa-save"></i> Save Work Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Control Page -->
+            <div id="price-control" class="page">
+                <h1 class="page-title">Price Control Panel</h1>
+                
+                <div class="control-panel">
+                    <div class="control-section">
+                        <h3><i class="fas fa-envelope"></i> Gmail Sell Price</h3>
+                        <div class="price-input-group">
+                            <div class="price-label">Gmail Account Price (৳)</div>
+                            <input type="number" class="price-input" id="gmailPrice" min="1" max="1000" step="0.5">
+                            <div class="price-suffix">৳ per account</div>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 14px; margin-top: 10px;">Set the price for each Gmail account submission. This will automatically update in user panel.</p>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3><i class="fab fa-facebook"></i> Facebook Sell Price</h3>
+                        <div class="price-input-group">
+                            <div class="price-label">Facebook Account Price (৳)</div>
+                            <input type="number" class="price-input" id="facebookPrice" min="1" max="1000" step="0.5">
+                            <div class="price-suffix">৳ per account</div>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 14px; margin-top: 10px;">Set the price for each Facebook account submission. This will automatically update in user panel.</p>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3><i class="fab fa-instagram"></i> Instagram Sell Price</h3>
+                        <div class="price-input-group">
+                            <div class="price-label">Instagram Account Price (৳)</div>
+                            <input type="number" class="price-input" id="instagramPrice" min="1" max="1000" step="0.5">
+                            <div class="price-suffix">৳ per account</div>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 14px; margin-top: 10px;">Set the price for each Instagram account submission. This will automatically update in user panel.</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="auth-btn" id="savePriceSettings" style="max-width: 200px;">
+                            <i class="fas fa-save"></i> Save Price Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Telegram Control Page -->
+            <div id="telegram-control" class="page">
+                <h1 class="page-title">Telegram Link Control</h1>
+                
+                <div class="control-panel">
+                    <div class="control-section">
+                        <h3><i class="fab fa-telegram"></i> Telegram Link</h3>
+                        <div class="form-group">
+                            <label for="telegramLink">Telegram Group/Channel Link</label>
+                            <input type="text" id="telegramLink" placeholder="https://t.me/your_group_link">
+                        </div>
+                        <p style="color: var(--text-light); font-size: 14px; margin-top: 10px;">Update the Telegram link that appears in the user panel. Users will use this to join your Telegram group.</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="auth-btn" id="saveTelegramLink" style="max-width: 200px;">
+                            <i class="fas fa-save"></i> Save Telegram Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Page -->
+            <div id="settings" class="page">
+                <h1 class="page-title">Admin Settings</h1>
+                
+                <div class="control-panel">
+                    <div class="control-section">
+                        <h3><i class="fas fa-user-shield"></i> Admin Account</h3>
+                        <div class="form-group">
+                            <label for="adminUsername">Admin Username</label>
+                            <input type="text" id="adminUsername" readonly style="background: #f5f5f5;">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPassword">Change Admin Password</label>
+                            <input type="password" id="adminPassword" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminConfirmPassword">Confirm New Password</label>
+                            <input type="password" id="adminConfirmPassword" placeholder="Confirm new password">
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3><i class="fas fa-trash-alt"></i> Data Management</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                            <button class="action-btn btn-view" id="clearAllData" style="width: 100%; background: var(--danger);">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                            <button class="action-btn btn-view" id="exportData" style="width: 100%; background: var(--success);">
+                                <i class="fas fa-file-export"></i> Export Data
+                            </button>
+                            <button class="action-btn btn-view" id="importData" style="width: 100%; background: var(--secondary);">
+                                <i class="fas fa-file-import"></i> Import Data
+                            </button>
+                        </div>
+                        <p style="color: var(--text-light); font-size: 12px; margin-top: 10px;">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i> 
+                            Warning: Clearing all data will delete all users, submissions, and requests. This action cannot be undone.
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="auth-btn" id="saveAdminSettings" style="max-width: 200px;">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="user-modal" id="userModal">
+        <div class="user-modal-content">
+            <h3 id="userModalTitle">User Details</h3>
+            <div id="userDetailsContent">
+                <!-- User details will be populated here -->
+            </div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="action-btn btn-view" id="closeUserModal" style="background: var(--danger);">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Balance Modal -->
+    <div class="balance-modal" id="balanceModal">
+        <div class="balance-modal-content">
+            <h3>Add Balance to User</h3>
+            <p id="balanceUserName" style="margin-bottom: 15px;"></p>
+            <div class="form-group">
+                <label>Select Wallet</label>
+                <select id="balanceWalletType" class="form-group" style="width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px;">
+                    <option value="gmail">Gmail Wallet</option>
+                    <option value="facebook">Facebook Wallet</option>
+                    <option value="instagram">Instagram Wallet</option>
+                    <option value="referral">Referral Wallet</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (৳)</label>
+                <input type="number" id="balanceAmount" placeholder="Enter amount" min="1" max="10000" step="0.01">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="action-btn btn-view" id="cancelAddBalance" style="background: var(--danger);">Cancel</button>
+                <button class="action-btn btn-view" id="confirmAddBalance" style="background: var(--success);">Add Balance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Telegram Modal -->
+    <div class="telegram-modal" id="telegramModal">
+        <div class="telegram-modal-content">
+            <h3>Update Telegram Link</h3>
+            <div class="form-group">
+                <label for="newTelegramLink">New Telegram Link</label>
+                <input type="text" id="newTelegramLink" placeholder="https://t.me/your_group_link">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="action-btn btn-view" id="cancelTelegramUpdate" style="background: var(--danger);">Cancel</button>
+                <button class="action-btn btn-view" id="confirmTelegramUpdate" style="background: var(--success);">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Data Modal -->
+    <div id="importModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 10px; padding: 25px; width: 90%; max-width: 500px;">
+            <h3 style="margin-bottom: 15px; color: var(--dark);">Import Data</h3>
+            <p style="color: var(--text-light); margin-bottom: 15px;">Select a JSON file to import data. This will replace all current data.</p>
+            <input type="file" id="importFileInput" accept=".json" style="margin-bottom: 15px; width: 100%; padding: 10px; border: 2px dashed #ddd; border-radius: 6px;">
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="action-btn btn-view" id="cancelImport" style="background: var(--danger);">Cancel</button>
+                <button class="action-btn btn-view" id="confirmImport" style="background: var(--success);">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin Panel System
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const authContainer = document.getElementById('authContainer');
+            const appContainer = document.getElementById('appContainer');
+            const loginForm = document.getElementById('loginForm');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const loginError = document.getElementById('loginError');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const toastContainer = document.getElementById('toastContainer');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const pages = document.querySelectorAll('.page');
+            
+            // Modal Elements
+            const userModal = document.getElementById('userModal');
+            const balanceModal = document.getElementById('balanceModal');
+            const telegramModal = document.getElementById('telegramModal');
+            
+            // Admin Credentials (Default - should be changed)
+            let adminCredentials = {
+                username: "admin",
+                password: "admin123"
+            };
+            
+            // Current user for balance modal
+            let currentUserForBalance = null;
+            
+            // Show Toast Notification
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icons = {
+                    success: 'fa-check-circle',
+                    error: 'fa-exclamation-circle',
+                    warning: 'fa-exclamation-triangle',
+                    info: 'fa-info-circle'
+                };
+                
+                toast.innerHTML = `
+                    <i class="fas ${icons[type]}" style="margin-right: 10px; font-size: 20px;"></i>
+                    <div>${message}</div>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    toast.remove();
+                }, 5000);
+            }
+            
+            // Format date
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            }
+            
+            // Check if admin is logged in
+            function checkAdminLoginStatus() {
+                const adminLoggedIn = localStorage.getItem('adminLoggedIn');
+                
+                if (adminLoggedIn === 'true') {
+                    authContainer.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    
+                    // Load admin username
+                    const adminUsername = localStorage.getItem('adminUsername') || adminCredentials.username;
+                    document.getElementById('adminUsername').value = adminUsername;
+                    
+                    // Load dashboard data
+                    loadDashboardData();
+                    
+                    // Load all users
+                    loadAllUsers();
+                    
+                    // Load activation requests
+                    loadActivationRequests();
+                    
+                    // Load submissions
+                    loadSubmissions();
+                    
+                    // Load withdraw requests
+                    loadWithdrawRequests();
+                    
+                    // Load work control settings
+                    loadWorkControlSettings();
+                    
+                    // Load price control settings
+                    loadPriceControlSettings();
+                    
+                    // Load telegram link
+                    loadTelegramLink();
+                } else {
+                    authContainer.style.display = 'flex';
+                    appContainer.style.display = 'none';
+                }
+            }
+            
+            // Login Form Submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('loginUsername').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                // Get admin credentials from localStorage or use default
+                const savedAdmin = JSON.parse(localStorage.getItem('adminCredentials'));
+                if (savedAdmin) {
+                    adminCredentials = savedAdmin;
+                }
+                
+                if (username === adminCredentials.username && password === adminCredentials.password) {
+                    // Login successful
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    localStorage.setItem('adminUsername', username);
+                    
+                    showToast('Admin login successful!', 'success');
+                    
+                    setTimeout(() => {
+                        checkAdminLoginStatus();
+                        loginForm.reset();
+                    }, 1000);
+                } else {
+                    loginError.textContent = 'Invalid admin username or password';
+                    loginError.style.display = 'block';
+                }
+            });
+            
+            // Logout
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('adminUsername');
+                showToast('Logged out successfully', 'info');
+                checkAdminLoginStatus();
+            });
+            
+            // Sidebar Toggle
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // Set Active Page
+            function setActivePage(pageId) {
+                // Hide all pages
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show selected page
+                const activePage = document.getElementById(pageId);
+                if (activePage) {
+                    activePage.classList.add('active');
+                }
+                
+                // Update active menu item
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('data-page') === pageId) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Close sidebar on mobile
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+                
+                // Load page-specific data
+                loadPageData(pageId);
+            }
+            
+            // Load page-specific data
+            function loadPageData(pageId) {
+                switch(pageId) {
+                    case 'dashboard':
+                        loadDashboardData();
+                        break;
+                    case 'users':
+                        loadAllUsers();
+                        break;
+                    case 'activation-requests':
+                        loadActivationRequests();
+                        break;
+                    case 'submissions':
+                        loadSubmissions();
+                        break;
+                    case 'withdraw-requests':
+                        loadWithdrawRequests();
+                        break;
+                    case 'work-control':
+                        loadWorkControlSettings();
+                        break;
+                    case 'price-control':
+                        loadPriceControlSettings();
+                        break;
+                    case 'telegram-control':
+                        loadTelegramLink();
+                        break;
+                }
+            }
+            
+            // Menu item clicks
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    setActivePage(pageId);
+                });
+            });
+            
+            // Load Dashboard Data
+            function loadDashboardData() {
+                // Get all users
+                const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                
+                // Get activation requests
+                const activationRequests = JSON.parse(localStorage.getItem('lowpricemarket_activation_requests')) || [];
+                
+                // Get submissions
+                const submissions = JSON.parse(localStorage.getItem('lowpricemarket_submissions')) || [];
+                
+                // Get withdraw requests
+                const withdrawRequests = JSON.parse(localStorage.getItem('lowpricemarket_withdraw_requests')) || [];
+                
+                // Calculate statistics
+                const totalUsers = users.length;
+                const activeUsers = users.filter(u => u.isActive && !u.banned).length;
+                const pendingActivations = activationRequests.filter(r => r.status === 'pending').length;
+                const pendingSubmissions = submissions.filter(s => s.status === 'pending').length;
+                const bannedUsers = users.filter(u => u.banned).length;
+                const totalWithdraw = withdrawRequests.filter(r => r.status === 'pending').reduce((sum, r) => sum + r.amount, 0);
+                
+                // Update dashboard cards
+                document.getElementById('totalUsers').textContent = totalUsers;
+                document.getElementById('activeUsers').textContent = activeUsers;
+                document.getElementById('pendingActivations').textContent = pendingActivations;
+                document.getElementById('pendingSubmissions').textContent = pendingSubmissions;
+                document.getElementById('bannedUsers').textContent = bannedUsers;
+                document.getElementById('totalWithdraw').textContent = totalWithdraw.toFixed(2) + ' ৳';
+                
+                // Load recent activity
+                loadRecentActivity();
+            }
+            
+            // Load Recent Activity
+            function loadRecentActivity() {
+                // Get all activities from different sources
+                const activities = [];
+                
+                // Get recent users (last 5)
+                const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                users.sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate));
+                users.slice(0, 5).forEach(user => {
+                    activities.push({
+                        type: 'user',
+                        name: user.name,
+                        activity: 'Registered',
+                        date: user.registrationDate,
+                        status: user.isActive ? 'Active' : 'Inactive'
+                    });
+                });
+                
+                // Get recent activation requests
+                const activationRequests = JSON.parse(localStorage.getItem('lowpricemarket_activation_requests')) || [];
+                activationRequests.sort((a, b) => new Date(b.date) - new Date(a.date));
+                activationRequests.slice(0, 3).forEach(request => {
+                    activities.push({
+                        type: 'activation',
+                        name: request.userName,
+                        activity: 'Activation Request',
+                        date: request.date,
+                        status: request.status
+                    });
+                });
+                
+                // Get recent submissions
+                const submissions = JSON.parse(localStorage.getItem('lowpricemarket_submissions')) || [];
+                submissions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                submissions.slice(0, 3).forEach(submission => {
+                    activities.push({
+                        type: 'submission',
+                        name: submission.userName,
+                        activity: `${submission.type} Submission`,
+                        date: submission.date,
+                        status: submission.status
+                    });
+                });
+                
+                // Sort all activities by date
+                activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // Display recent activities
+                const tableBody = document.getElementById('recentActivityBody');
+                const emptyDiv = document.getElementById('noActivity');
+                
+                if (activities.length === 0) {
+                    tableBody.innerHTML = '';
+                    if (emptyDiv) emptyDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (emptyDiv) emptyDiv.style.display = 'none';
+                
+                let html = '';
+                activities.slice(0, 10).forEach(activity => {
+                    const statusClass = activity.status === 'approved' || activity.status === 'Active' ? 'status-active' :
+                                       activity.status === 'pending' ? 'status-pending' : 'status-inactive';
+                    
+                    html += `
+                        <tr>
+                            <td>${activity.name}</td>
+                            <td>${activity.activity}</td>
+                            <td>${formatDate(activity.date)}</td>
+                            <td><span class="status-badge ${statusClass}">${activity.status}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+            }
+            
+            // Load All Users
+            function loadAllUsers(searchTerm = '') {
+                const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                
+                // Filter users based on search term
+                let filteredUsers = users;
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    filteredUsers = users.filter(user => 
+                        user.name.toLowerCase().includes(term) ||
+                        user.email.toLowerCase().includes(term) ||
+                        user.username.toLowerCase().includes(term) ||
+                        (user.phoneNumber && user.phoneNumber.includes(term))
+                    );
+                }
+                
+                const tableBody = document.getElementById('usersTableBody');
+                const emptyDiv = document.getElementById('noUsers');
+                
+                if (filteredUsers.length === 0) {
+                    tableBody.innerHTML = '';
+                    if (emptyDiv) emptyDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (emptyDiv) emptyDiv.style.display = 'none';
+                
+                let html = '';
+                filteredUsers.forEach(user => {
+                    // Calculate referral count
+                    const referralCount = users.filter(u => u.referredBy === user.referralCode).length;
+                    
+                    // Calculate total balance
+                    const totalBalance = user.balance.gmail + user.balance.facebook + user.balance.instagram + user.balance.referral;
+                    
+                    // Generate phone number if not available
+                    let phoneNumber = user.phoneNumber;
+                    if (!phoneNumber) {
+                        // Generate a random Bangladeshi phone number
+                        const prefix = '01' + Math.floor(Math.random() * 10);
+                        const suffix = Math.floor(10000000 + Math.random() * 90000000);
+                        phoneNumber = prefix + suffix.toString().substring(0, 8);
+                    }
+                    
+                    // Hide phone number partially
+                    const hiddenPhone = phoneNumber.substring(0, 3) + '*****' + phoneNumber.substring(phoneNumber.length - 2);
+                    
+                    html += `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.username}</td>
+                            <td>${hiddenPhone}</td>
+                            <td>${referralCount}</td>
+                            <td>
+                                ${user.banned ? 
+                                    '<span class="status-badge status-banned">Banned</span>' : 
+                                    (user.isActive ? 
+                                        '<span class="status-badge status-active">Active</span>' : 
+                                        '<span class="status-badge status-inactive">Inactive</span>'
+                                    )
+                                }
+                            </td>
+                            <td>${totalBalance.toFixed(2)} ৳</td>
+                            <td>
+                                ${user.banned ? 
+                                    `<button class="action-btn btn-unban" data-userid="${user.id}" data-username="${user.name}">Unban</button>` :
+                                    `<button class="action-btn btn-ban" data-userid="${user.id}" data-username="${user.name}">Ban</button>`
+                                }
+                                ${!user.isActive && !user.banned ? 
+                                    `<button class="action-btn btn-activate" data-userid="${user.id}" data-username="${user.name}">Activate</button>` :
+                                    ''
+                                }
+                                ${user.isActive && !user.banned ? 
+                                    `<button class="action-btn btn-deactivate" data-userid="${user.id}" data-username="${user.name}">Deactivate</button>` :
+                                    ''
+                                }
+                                <button class="action-btn btn-add-balance" data-userid="${user.id}" data-username="${user.name}">Add Balance</button>
+                                <button class="action-btn btn-view" data-userid="${user.id}" data-username="${user.name}">View</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                
+                // Add event listeners to action buttons
+                addUserActionListeners();
+            }
+            
+            // Add User Action Listeners
+            function addUserActionListeners() {
+                // Ban user
+                document.querySelectorAll('.btn-ban').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        banUser(userId, username);
+                    });
+                });
+                
+                // Unban user
+                document.querySelectorAll('.btn-unban').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        unbanUser(userId, username);
+                    });
+                });
+                
+                // Activate user
+                document.querySelectorAll('.btn-activate').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        activateUser(userId, username);
+                    });
+                });
+                
+                // Deactivate user
+                document.querySelectorAll('.btn-deactivate').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        deactivateUser(userId, username);
+                    });
+                });
+                
+                // View user
+                document.querySelectorAll('.btn-view').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        viewUserDetails(userId, username);
+                    });
+                });
+                
+                // Add balance
+                document.querySelectorAll('.btn-add-balance').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        openAddBalanceModal(userId, username);
+                    });
+                });
+            }
+            
+            // Open Add Balance Modal
+            function openAddBalanceModal(userId, username) {
+                currentUserForBalance = { userId, username };
+                document.getElementById('balanceUserName').textContent = `User: ${username}`;
+                document.getElementById('balanceAmount').value = '';
+                balanceModal.classList.add('active');
+            }
+            
+            // Close Add Balance Modal
+            document.getElementById('cancelAddBalance').addEventListener('click', function() {
+                balanceModal.classList.remove('active');
+                currentUserForBalance = null;
+            });
+            
+            // Confirm Add Balance
+            document.getElementById('confirmAddBalance').addEventListener('click', function() {
+                const amount = parseFloat(document.getElementById('balanceAmount').value);
+                const walletType = document.getElementById('balanceWalletType').value;
+                
+                if (!currentUserForBalance || !amount || amount <= 0) {
+                    showToast('Please enter a valid amount', 'error');
+                    return;
+                }
+                
+                if (confirm(`Add ${amount}৳ to ${currentUserForBalance.username}'s ${walletType} wallet?`)) {
+                    const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                    const userIndex = users.findIndex(u => u.id === currentUserForBalance.userId);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].balance[walletType] += amount;
+                        localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                        
+                        showToast(`Added ${amount}৳ to ${currentUserForBalance.username}'s ${walletType} wallet`, 'success');
+                        
+                        // Close modal and reload data
+                        balanceModal.classList.remove('active');
+                        currentUserForBalance = null;
+                        
+                        // Reload data
+                        if (document.getElementById('users').classList.contains('active')) {
+                            loadAllUsers();
+                        }
+                        loadDashboardData();
+                    }
+                }
+            });
+            
+            // Ban User
+            function banUser(userId, username) {
+                if (confirm(`Are you sure you want to ban ${username}?`)) {
+                    const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].banned = true;
+                        localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                        
+                        showToast(`User ${username} has been banned`, 'success');
+                        loadAllUsers();
+                        loadDashboardData();
+                    }
+                }
+            }
+            
+            // Unban User
+            function unbanUser(userId, username) {
+                if (confirm(`Are you sure you want to unban ${username}?`)) {
+                    const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].banned = false;
+                        localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                        
+                        showToast(`User ${username} has been unbanned`, 'success');
+                        loadAllUsers();
+                        loadDashboardData();
+                    }
+                }
+            }
+            
+            // Activate User
+            function activateUser(userId, username) {
+                if (confirm(`Are you sure you want to activate ${username}?`)) {
+                    const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].isActive = true;
+                        localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                        
+                        // Check if this user has pending activation request
+                        const activationRequests = JSON.parse(localStorage.getItem('lowpricemarket_activation_requests')) || [];
+                        const activationIndex = activationRequests.findIndex(r => r.userId === userId && r.status === 'pending');
+                        
+                        if (activationIndex !== -1) {
+                            activationRequests[activationIndex].status = 'approved';
+                            localStorage.setItem('lowpricemarket_activation_requests', JSON.stringify(activationRequests));
+                        }
+                        
+                        // Check if this user was referred by someone
+                        if (users[userIndex].referredBy) {
+                            // Find referrer
+                            const referrerIndex = users.findIndex(u => u.referralCode === users[userIndex].referredBy);
+                            if (referrerIndex !== -1) {
+                                // Add referral bonus to referrer
+                                users[referrerIndex].balance.referral += 10;
+                                
+                                // Update referrer's active referrals count
+                                users[referrerIndex].activeReferrals = (users[referrerIndex].activeReferrals || 0) + 1;
+                                
+                                // Check if referrer now qualifies as Team Leader (25 active referrals)
+                                if (users[referrerIndex].activeReferrals >= 25) {
+                                    // Transfer Team Wallet Commission to Referral Wallet
+                                    const teamCommission = users[referrerIndex].teamWalletCommission || 0;
+                                    if (teamCommission > 0) {
+                                        users[referrerIndex].balance.referral += teamCommission;
+                                        users[referrerIndex].teamWalletCommission = 0;
+                                    }
+                                }
+                                
+                                localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                            }
+                        }
+                        
+                        showToast(`User ${username} has been activated`, 'success');
+                        loadAllUsers();
+                        loadDashboardData();
+                        loadActivationRequests();
+                    }
+                }
+            }
+            
+            // Deactivate User
+            function deactivateUser(userId, username) {
+                if (confirm(`Are you sure you want to deactivate ${username}?`)) {
+                    const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].isActive = false;
+                        localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                        
+                        showToast(`User ${username} has been deactivated`, 'success');
+                        loadAllUsers();
+                        loadDashboardData();
+                    }
+                }
+            }
+            
+            // View User Details
+            function viewUserDetails(userId, username) {
+                const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                const user = users.find(u => u.id === userId);
+                
+                if (user) {
+                    // Calculate total referrals
+                    const referralCount = users.filter(u => u.referredBy === user.referralCode).length;
+                    
+                    // Calculate total balance
+                    const totalBalance = user.balance.gmail + user.balance.facebook + user.balance.instagram + user.balance.referral;
+                    
+                    // Generate phone number if not available
+                    let phoneNumber = user.phoneNumber;
+                    if (!phoneNumber) {
+                        const prefix = '01' + Math.floor(Math.random() * 10);
+                        const suffix = Math.floor(10000000 + Math.random() * 90000000);
+                        phoneNumber = prefix + suffix.toString().substring(0, 8);
+                    }
+                    
+                    const detailsHtml = `
+                        <div style="margin-bottom: 15px;">
+                            <strong>User ID:</strong> ${user.id}<br>
+                            <strong>Name:</strong> ${user.name}<br>
+                            <strong>Email:</strong> ${user.email}<br>
+                            <strong>Username:</strong> ${user.username}<br>
+                            <strong>Password:</strong> ${user.password}<br>
+                            <strong>Phone:</strong> ${phoneNumber}<br>
+                            <strong>Status:</strong> ${user.banned ? 'Banned' : (user.isActive ? 'Active' : 'Inactive')}<br>
+                            <strong>Referral Code:</strong> ${user.referralCode}<br>
+                            <strong>Referred By:</strong> ${user.referredBy || 'None'}<br>
+                            <strong>Registration Date:</strong> ${formatDate(user.registrationDate)}<br>
+                            <strong>Total Referrals:</strong> ${referralCount}<br>
+                            <strong>Active Referrals:</strong> ${user.activeReferrals || 0}<br>
+                            <strong>Team Wallet Commission:</strong> ${user.teamWalletCommission || 0}৳<br>
+                            <strong>Total Gmail Sales by Team:</strong> ${user.totalGmailSalesByTeam || 0}<br>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <h4 style="margin-bottom: 10px;">Wallet Balances</h4>
+                            <strong>Gmail Wallet:</strong> ${user.balance.gmail.toFixed(2)}৳<br>
+                            <strong>Facebook Wallet:</strong> ${user.balance.facebook.toFixed(2)}৳<br>
+                            <strong>Instagram Wallet:</strong> ${user.balance.instagram.toFixed(2)}৳<br>
+                            <strong>Referral Wallet:</strong> ${user.balance.referral.toFixed(2)}৳<br>
+                            <strong>Withdraw Balance:</strong> ${user.balance.withdraw || 0}৳<br>
+                            <hr style="margin: 10px 0;">
+                            <strong>Total Balance:</strong> ${totalBalance.toFixed(2)}৳
+                        </div>
+                    `;
+                    
+                    document.getElementById('userModalTitle').textContent = `User Details: ${username}`;
+                    document.getElementById('userDetailsContent').innerHTML = detailsHtml;
+                    userModal.classList.add('active');
+                }
+            }
+            
+            // Close User Modal
+            document.getElementById('closeUserModal').addEventListener('click', function() {
+                userModal.classList.remove('active');
+            });
+            
+            // Load Activation Requests
+            function loadActivationRequests(searchTerm = '') {
+                const activationRequests = JSON.parse(localStorage.getItem('lowpricemarket_activation_requests')) || [];
+                
+                // Filter requests based on search term
+                let filteredRequests = activationRequests;
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    filteredRequests = activationRequests.filter(request => 
+                        request.userName.toLowerCase().includes(term) ||
+                        request.senderNumber.toLowerCase().includes(term) ||
+                        request.transactionId.toLowerCase().includes(term)
+                    );
+                }
+                
+                // Sort by date (newest first)
+                filteredRequests.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                const tableBody = document.getElementById('activationTableBody');
+                const emptyDiv = document.getElementById('noActivations');
+                
+                if (filteredRequests.length === 0) {
+                    tableBody.innerHTML = '';
+                    if (emptyDiv) emptyDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (emptyDiv) emptyDiv.style.display = 'none';
+                
+                let html = '';
+                filteredRequests.forEach(request => {
+                    const statusClass = request.status === 'approved' ? 'status-approved' : 
+                                      request.status === 'rejected' ? 'status-inactive' : 'status-pending';
+                    
+                    html += `
+                        <tr>
+                            <td>${request.id}</td>
+                            <td>${request.userName}</td>
+                            <td>${request.senderNumber}</td>
+                            <td>${request.transactionId}</td>
+                            <td>${request.method.toUpperCase()}</td>
+                            <td>${formatDate(request.date)}</td>
+                            <td><span class="status-badge ${statusClass}">${request.status}</span></td>
+                            <td>
+                                ${request.status === 'pending' ? 
+                                    `<button class="action-btn btn-approve" data-id="${request.id}" data-userid="${request.userId}" data-username="${request.userName}">Approve</button>
+                                     <button class="action-btn btn-reject" data-id="${request.id}" data-userid="${request.userId}" data-username="${request.userName}">Reject</button>` :
+                                    ''
+                                }
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                
+                // Add event listeners to action buttons
+                addActivationActionListeners();
+            }
+            
+            // Add Activation Action Listeners
+            function addActivationActionListeners() {
+                // Approve activation
+                document.querySelectorAll('.btn-approve').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const requestId = parseInt(this.getAttribute('data-id'));
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        approveActivation(requestId, userId, username);
+                    });
+                });
+                
+                // Reject activation
+                document.querySelectorAll('.btn-reject').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const requestId = parseInt(this.getAttribute('data-id'));
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        rejectActivation(requestId, userId, username);
+                    });
+                });
+            }
+            
+            // Approve Activation
+            function approveActivation(requestId, userId, username) {
+                if (confirm(`Are you sure you want to approve activation for ${username}?`)) {
+                    // Update activation request status
+                    const activationRequests = JSON.parse(localStorage.getItem('lowpricemarket_activation_requests')) || [];
+                    const requestIndex = activationRequests.findIndex(r => r.id === requestId);
+                    
+                    if (requestIndex !== -1) {
+                        activationRequests[requestIndex].status = 'approved';
+                        localStorage.setItem('lowpricemarket_activation_requests', JSON.stringify(activationRequests));
+                    }
+                    
+                    // Activate user
+                    const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].isActive = true;
+                        
+                        // Check if this user was referred by someone
+                        if (users[userIndex].referredBy) {
+                            // Find referrer
+                            const referrerIndex = users.findIndex(u => u.referralCode === users[userIndex].referredBy);
+                            if (referrerIndex !== -1) {
+                                // Add referral bonus to referrer
+                                users[referrerIndex].balance.referral += 10;
+                                
+                                // Update referrer's active referrals count
+                                users[referrerIndex].activeReferrals = (users[referrerIndex].activeReferrals || 0) + 1;
+                                
+                                // Check if referrer now qualifies as Team Leader (25 active referrals)
+                                if (users[referrerIndex].activeReferrals >= 25) {
+                                    // Transfer Team Wallet Commission to Referral Wallet
+                                    const teamCommission = users[referrerIndex].teamWalletCommission || 0;
+                                    if (teamCommission > 0) {
+                                        users[referrerIndex].balance.referral += teamCommission;
+                                        users[referrerIndex].teamWalletCommission = 0;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                    }
+                    
+                    showToast(`Activation approved for ${username}`, 'success');
+                    loadActivationRequests();
+                    loadDashboardData();
+                    loadAllUsers();
+                }
+            }
+            
+            // Reject Activation
+            function rejectActivation(requestId, userId, username) {
+                if (confirm(`Are you sure you want to reject activation for ${username}?`)) {
+                    // Update activation request status
+                    const activationRequests = JSON.parse(localStorage.getItem('lowpricemarket_activation_requests')) || [];
+                    const requestIndex = activationRequests.findIndex(r => r.id === requestId);
+                    
+                    if (requestIndex !== -1) {
+                        activationRequests[requestIndex].status = 'rejected';
+                        localStorage.setItem('lowpricemarket_activation_requests', JSON.stringify(activationRequests));
+                    }
+                    
+                    showToast(`Activation rejected for ${username}`, 'success');
+                    loadActivationRequests();
+                    loadDashboardData();
+                }
+            }
+            
+            // Load Submissions
+            function loadSubmissions(searchTerm = '', typeFilter = 'all') {
+                const submissions = JSON.parse(localStorage.getItem('lowpricemarket_submissions')) || [];
+                
+                // Filter submissions based on search term and type
+                let filteredSubmissions = submissions;
+                
+                // Apply type filter
+                if (typeFilter !== 'all') {
+                    filteredSubmissions = submissions.filter(s => s.type === typeFilter);
+                }
+                
+                // Apply search filter
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    filteredSubmissions = filteredSubmissions.filter(submission => 
+                        submission.userName.toLowerCase().includes(term) ||
+                        (submission.email && submission.email.toLowerCase().includes(term)) ||
+                        (submission.account && submission.account.toLowerCase().includes(term))
+                    );
+                }
+                
+                // Sort by date (newest first)
+                filteredSubmissions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                const tableBody = document.getElementById('submissionTableBody');
+                const emptyDiv = document.getElementById('noSubmissions');
+                
+                if (filteredSubmissions.length === 0) {
+                    tableBody.innerHTML = '';
+                    if (emptyDiv) emptyDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (emptyDiv) emptyDiv.style.display = 'none';
+                
+                let html = '';
+                filteredSubmissions.forEach(submission => {
+                    const statusClass = submission.status === 'approved' ? 'status-approved' : 
+                                      submission.status === 'rejected' ? 'status-inactive' : 'status-pending';
+                    
+                    // Show full password for admin
+                    const passwordDisplay = submission.password || 'N/A';
+                    
+                    html += `
+                        <tr>
+                            <td>${submission.id}</td>
+                            <td>${submission.userName}</td>
+                            <td>${submission.type.charAt(0).toUpperCase() + submission.type.slice(1)}</td>
+                            <td>${submission.email || submission.account}</td>
+                            <td>${passwordDisplay}</td>
+                            <td>${submission.amount} ৳</td>
+                            <td>${formatDate(submission.date)}</td>
+                            <td><span class="status-badge ${statusClass}">${submission.status}</span></td>
+                            <td>
+                                ${submission.status === 'pending' ? 
+                                    `<button class="action-btn btn-approve" data-id="${submission.id}" data-userid="${submission.userId}" data-type="${submission.type}" data-amount="${submission.amount}" data-username="${submission.userName}">Approve</button>
+                                     <button class="action-btn btn-reject" data-id="${submission.id}" data-userid="${submission.userId}" data-type="${submission.type}" data-username="${submission.userName}">Reject</button>` :
+                                    ''
+                                }
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                
+                // Add event listeners to action buttons
+                addSubmissionActionListeners();
+            }
+            
+            // Add Submission Action Listeners
+            function addSubmissionActionListeners() {
+                // Approve submission
+                document.querySelectorAll('.btn-approve').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const submissionId = parseInt(this.getAttribute('data-id'));
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const type = this.getAttribute('data-type');
+                        const amount = parseFloat(this.getAttribute('data-amount'));
+                        const username = this.getAttribute('data-username');
+                        approveSubmission(submissionId, userId, type, amount, username);
+                    });
+                });
+                
+                // Reject submission
+                document.querySelectorAll('.btn-reject').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const submissionId = parseInt(this.getAttribute('data-id'));
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const type = this.getAttribute('data-type');
+                        const username = this.getAttribute('data-username');
+                        rejectSubmission(submissionId, userId, type, username);
+                    });
+                });
+            }
+            
+            // Approve Submission
+            function approveSubmission(submissionId, userId, type, amount, username) {
+                if (confirm(`Are you sure you want to approve this ${type} submission for ${username}?`)) {
+                    // Update submission status
+                    const submissions = JSON.parse(localStorage.getItem('lowpricemarket_submissions')) || [];
+                    const submissionIndex = submissions.findIndex(s => s.id === submissionId);
+                    
+                    if (submissionIndex !== -1) {
+                        submissions[submissionIndex].status = 'approved';
+                        localStorage.setItem('lowpricemarket_submissions', JSON.stringify(submissions));
+                    }
+                    
+                    // Update user balance
+                    const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    
+                    if (userIndex !== -1) {
+                        // Add amount to user's wallet
+                        if (type === 'gmail') {
+                            users[userIndex].balance.gmail += amount;
+                            
+                            // Add commission to team leader if user was referred
+                            if (users[userIndex].referredBy) {
+                                // Find referrer
+                                const referrerIndex = users.findIndex(u => u.referralCode === users[userIndex].referredBy);
+                                if (referrerIndex !== -1) {
+                                    // Add 1৳ commission to team leader's Team Wallet Commission
+                                    users[referrerIndex].teamWalletCommission = (users[referrerIndex].teamWalletCommission || 0) + 1;
+                                    
+                                    // Track total Gmail sales by team
+                                    users[referrerIndex].totalGmailSalesByTeam = (users[referrerIndex].totalGmailSalesByTeam || 0) + 1;
+                                }
+                            }
+                        } else if (type === 'facebook') {
+                            users[userIndex].balance.facebook += amount;
+                        } else if (type === 'instagram') {
+                            users[userIndex].balance.instagram += amount;
+                        }
+                        
+                        localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                    }
+                    
+                    showToast(`${type} submission approved for ${username}`, 'success');
+                    loadSubmissions();
+                    loadDashboardData();
+                    loadAllUsers();
+                }
+            }
+            
+            // Reject Submission
+            function rejectSubmission(submissionId, userId, type, username) {
+                if (confirm(`Are you sure you want to reject this ${type} submission for ${username}?`)) {
+                    // Update submission status
+                    const submissions = JSON.parse(localStorage.getItem('lowpricemarket_submissions')) || [];
+                    const submissionIndex = submissions.findIndex(s => s.id === submissionId);
+                    
+                    if (submissionIndex !== -1) {
+                        submissions[submissionIndex].status = 'rejected';
+                        localStorage.setItem('lowpricemarket_submissions', JSON.stringify(submissions));
+                    }
+                    
+                    showToast(`${type} submission rejected for ${username}`, 'success');
+                    loadSubmissions();
+                    loadDashboardData();
+                }
+            }
+            
+            // Load Withdraw Requests
+            function loadWithdrawRequests(searchTerm = '') {
+                const withdrawRequests = JSON.parse(localStorage.getItem('lowpricemarket_withdraw_requests')) || [];
+                
+                // Filter requests based on search term
+                let filteredRequests = withdrawRequests;
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    filteredRequests = withdrawRequests.filter(request => 
+                        request.userName.toLowerCase().includes(term) ||
+                        request.number.toLowerCase().includes(term)
+                    );
+                }
+                
+                // Sort by date (newest first)
+                filteredRequests.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                const tableBody = document.getElementById('withdrawTableBody');
+                const emptyDiv = document.getElementById('noWithdrawals');
+                
+                if (filteredRequests.length === 0) {
+                    tableBody.innerHTML = '';
+                    if (emptyDiv) emptyDiv.style.display = 'block';
+                    return;
+                }
+                
+                if (emptyDiv) emptyDiv.style.display = 'none';
+                
+                let html = '';
+                filteredRequests.forEach(request => {
+                    const statusClass = request.status === 'approved' ? 'status-approved' : 
+                                      request.status === 'rejected' ? 'status-inactive' : 'status-pending';
+                    
+                    html += `
+                        <tr>
+                            <td>${request.id}</td>
+                            <td>${request.userName}</td>
+                            <td>${request.wallet.charAt(0).toUpperCase() + request.wallet.slice(1)} Wallet</td>
+                            <td>${request.amount} ৳</td>
+                            <td>${request.charge} ৳</td>
+                            <td>${request.receive} ৳</td>
+                            <td>${request.method.toUpperCase()}</td>
+                            <td>${request.number}</td>
+                            <td>${formatDate(request.date)}</td>
+                            <td><span class="status-badge ${statusClass}">${request.status}</span></td>
+                            <td>
+                                ${request.status === 'pending' ? 
+                                    `<button class="action-btn btn-approve" data-id="${request.id}" data-userid="${request.userId}" data-username="${request.userName}" data-amount="${request.amount}">Approve</button>
+                                     <button class="action-btn btn-reject" data-id="${request.id}" data-userid="${request.userId}" data-username="${request.userName}">Reject</button>` :
+                                    ''
+                                }
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                
+                // Add event listeners to action buttons
+                addWithdrawActionListeners();
+            }
+            
+            // Add Withdraw Action Listeners
+            function addWithdrawActionListeners() {
+                // Approve withdraw
+                document.querySelectorAll('.btn-approve').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const requestId = parseInt(this.getAttribute('data-id'));
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        const amount = parseFloat(this.getAttribute('data-amount'));
+                        approveWithdraw(requestId, userId, username, amount);
+                    });
+                });
+                
+                // Reject withdraw
+                document.querySelectorAll('.btn-reject').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const requestId = parseInt(this.getAttribute('data-id'));
+                        const userId = parseInt(this.getAttribute('data-userid'));
+                        const username = this.getAttribute('data-username');
+                        rejectWithdraw(requestId, userId, username);
+                    });
+                });
+            }
+            
+            // Approve Withdraw
+            function approveWithdraw(requestId, userId, username, amount) {
+                if (confirm(`Are you sure you want to approve withdraw request of ${amount}৳ for ${username}?`)) {
+                    // Update withdraw request status
+                    const withdrawRequests = JSON.parse(localStorage.getItem('lowpricemarket_withdraw_requests')) || [];
+                    const requestIndex = withdrawRequests.findIndex(r => r.id === requestId);
+                    
+                    if (requestIndex !== -1) {
+                        withdrawRequests[requestIndex].status = 'approved';
+                        localStorage.setItem('lowpricemarket_withdraw_requests', JSON.stringify(withdrawRequests));
+                        
+                        // Update user balance (already deducted when request was made)
+                        // We just need to add to withdraw balance
+                        const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                        const userIndex = users.findIndex(u => u.id === userId);
+                        
+                        if (userIndex !== -1) {
+                            users[userIndex].balance.withdraw = (users[userIndex].balance.withdraw || 0) + amount;
+                            localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                        }
+                    }
+                    
+                    showToast(`Withdraw request approved for ${username}`, 'success');
+                    loadWithdrawRequests();
+                    loadDashboardData();
+                    loadAllUsers();
+                }
+            }
+            
+            // Reject Withdraw
+            function rejectWithdraw(requestId, userId, username) {
+                if (confirm(`Are you sure you want to reject withdraw request for ${username}?`)) {
+                    // Update withdraw request status
+                    const withdrawRequests = JSON.parse(localStorage.getItem('lowpricemarket_withdraw_requests')) || [];
+                    const requestIndex = withdrawRequests.findIndex(r => r.id === requestId);
+                    
+                    if (requestIndex !== -1) {
+                        withdrawRequests[requestIndex].status = 'rejected';
+                        
+                        // Return money to user's wallet
+                        const wallet = withdrawRequests[requestIndex].wallet;
+                        const amount = withdrawRequests[requestIndex].amount;
+                        
+                        // Update user balance
+                        const users = JSON.parse(localStorage.getItem('lowpricemarket_users')) || [];
+                        const userIndex = users.findIndex(u => u.id === userId);
+                        
+                        if (userIndex !== -1) {
+                            users[userIndex].balance[wallet] += amount;
+                            localStorage.setItem('lowpricemarket_users', JSON.stringify(users));
+                        }
+                        
+                        localStorage.setItem('lowpricemarket_withdraw_requests', JSON.stringify(withdrawRequests));
+                    }
+                    
+                    showToast(`Withdraw request rejected for ${username}`, 'success');
+                    loadWithdrawRequests();
+                    loadDashboardData();
+                    loadAllUsers();
+                }
+            }
+            
+            // Load Work Control Settings
+            function loadWorkControlSettings() {
+                // Load work status from localStorage
+                const workStatus = JSON.parse(localStorage.getItem('lowpricemarket_work_status')) || {
+                    gmail: false,
+                    facebook: false,
+                    instagram: false
+                };
+                
+                // Update toggle switches
+                document.getElementById('toggleGmailWork').checked = workStatus.gmail;
+                document.getElementById('toggleFacebookWork').checked = workStatus.facebook;
+                document.getElementById('toggleInstagramWork').checked = workStatus.instagram;
+            }
+            
+            // Load Price Control Settings
+            function loadPriceControlSettings() {
+                // Load prices from localStorage
+                const prices = JSON.parse(localStorage.getItem('lowpricemarket_prices')) || {
+                    gmail: 10,
+                    facebook: 5,
+                    instagram: 5
+                };
+                
+                // Update price inputs
+                document.getElementById('gmailPrice').value = prices.gmail;
+                document.getElementById('facebookPrice').value = prices.facebook;
+                document.getElementById('instagramPrice').value = prices.instagram;
+            }
+            
+            // Load Telegram Link
+            function loadTelegramLink() {
+                const telegramLink = localStorage.getItem('lowpricemarket_telegram_link') || 'https://t.me/your_group_link';
+                document.getElementById('telegramLink').value = telegramLink;
+            }
+            
+            // Save Work Settings
+            document.getElementById('saveWorkSettings').addEventListener('click', function() {
+                const workStatus = {
+                    gmail: document.getElementById('toggleGmailWork').checked,
+                    facebook: document.getElementById('toggleFacebookWork').checked,
+                    instagram: document.getElementById('toggleInstagramWork').checked
+                };
+                
+                localStorage.setItem('lowpricemarket_work_status', JSON.stringify(workStatus));
+                showToast('Work settings saved successfully!', 'success');
+                
+                // Update user panel immediately
+                if (workStatus.gmail) {
+                    showToast('Gmail work is now ON for users', 'info');
+                } else {
+                    showToast('Gmail work is now OFF for users', 'warning');
+                }
+                
+                if (workStatus.facebook) {
+                    showToast('Facebook work is now ON for users', 'info');
+                } else {
+                    showToast('Facebook work is now OFF for users', 'warning');
+                }
+                
+                if (workStatus.instagram) {
+                    showToast('Instagram work is now ON for users', 'info');
+                } else {
+                    showToast('Instagram work is now OFF for users', 'warning');
+                }
+            });
+            
+            // Save Price Settings
+            document.getElementById('savePriceSettings').addEventListener('click', function() {
+                const gmailPrice = parseFloat(document.getElementById('gmailPrice').value) || 10;
+                const facebookPrice = parseFloat(document.getElementById('facebookPrice').value) || 5;
+                const instagramPrice = parseFloat(document.getElementById('instagramPrice').value) || 5;
+                
+                const prices = {
+                    gmail: gmailPrice,
+                    facebook: facebookPrice,
+                    instagram: instagramPrice
+                };
+                
+                localStorage.setItem('lowpricemarket_prices', JSON.stringify(prices));
+                showToast('Price settings saved successfully!', 'success');
+                
+                // Show updated prices
+                showToast(`Gmail: ${gmailPrice}৳, Facebook: ${facebookPrice}৳, Instagram: ${instagramPrice}৳`, 'info');
+            });
+            
+            // Save Telegram Link
+            document.getElementById('saveTelegramLink').addEventListener('click', function() {
+                const telegramLink = document.getElementById('telegramLink').value.trim();
+                
+                if (!telegramLink) {
+                    showToast('Please enter a Telegram link', 'error');
+                    return;
+                }
+                
+                if (!telegramLink.startsWith('https://t.me/')) {
+                    showToast('Please enter a valid Telegram link (https://t.me/...)', 'error');
+                    return;
+                }
+                
+                localStorage.setItem('lowpricemarket_telegram_link', telegramLink);
+                showToast('Telegram link updated successfully!', 'success');
+            });
+            
+            // Save Admin Settings
+            document.getElementById('saveAdminSettings').addEventListener('click', function() {
+                const newPassword = document.getElementById('adminPassword').value.trim();
+                const confirmPassword = document.getElementById('adminConfirmPassword').value.trim();
+                
+                if (newPassword && confirmPassword) {
+                    if (newPassword !== confirmPassword) {
+                        showToast('Passwords do not match', 'error');
+                        return;
+                    }
+                    
+                    if (newPassword.length < 6) {
+                        showToast('Password must be at least 6 characters', 'error');
+                        return;
+                    }
+                    
+                    // Update admin password
+                    adminCredentials.password = newPassword;
+                    localStorage.setItem('adminCredentials', JSON.stringify(adminCredentials));
+                    
+                    // Clear password fields
+                    document.getElementById('adminPassword').value = '';
+                    document.getElementById('adminConfirmPassword').value = '';
+                    
+                    showToast('Admin password updated successfully!', 'success');
+                } else if (newPassword || confirmPassword) {
+                    showToast('Please fill both password fields', 'warning');
+                } else {
+                    showToast('No changes made', 'info');
+                }
+            });
+            
+            // Clear All Data
+            document.getElementById('clearAllData').addEventListener('click', function() {
+                if (confirm('WARNING: This will delete ALL data including users, submissions, and requests. This action cannot be undone. Are you sure?')) {
+                    if (confirm('ARE YOU ABSOLUTELY SURE? This will reset everything to empty.')) {
+                        // Clear all localStorage data
+                        localStorage.removeItem('lowpricemarket_users');
+                        localStorage.removeItem('lowpricemarket_activation_requests');
+                        localStorage.removeItem('lowpricemarket_submissions');
+                        localStorage.removeItem('lowpricemarket_withdraw_requests');
+                        localStorage.removeItem('lowpricemarket_profile_images');
+                        localStorage.removeItem('lowpricemarket_telegram_link');
+                        
+                        // Reset to default prices and work status
+                        localStorage.setItem('lowpricemarket_prices', JSON.stringify({
+                            gmail: 10,
+                            facebook: 5,
+                            instagram: 5
+                        }));
+                        
+                        localStorage.setItem('lowpricemarket_work_status', JSON.stringify({
+                            gmail: false,
+                            facebook: false,
+                            instagram: false
+                        }));
+                        
+                        // Create default admin if not exists
+                        if (!localStorage.getItem('adminCredentials')) {
+                            localStorage.setItem('adminCredentials', JSON.stringify(adminCredentials));
+                        }
+                        
+                        showToast('All data cleared successfully!', 'success');
+                        
+                        // Reload data
+                        loadDashboardData();
+                        loadAllUsers();
+                        loadActivationRequests();
+                        loadSubmissions();
+                        loadWithdrawRequests();
+                        loadWorkControlSettings();
+                        loadPriceControlSettings();
+                        loadTelegramLink();
+                    }
+                }
+            });
+            
+            // Export Data
+            document.getElementById('exportData').addEventListener('click', function() {
+                // Collect all data
+                const exportData = {
+                    users: JSON.parse(localStorage.getItem('lowpricemarket_users')) || [],
+                    activationRequests: JSON.parse(localStorage.getItem('lowpricemarket_activation_requests')) || [],
+                    submissions: JSON.parse(localStorage.getItem('lowpricemarket_submissions')) || [],
+                    withdrawRequests: JSON.parse(localStorage.getItem('lowpricemarket_withdraw_requests')) || [],
+                    profileImages: JSON.parse(localStorage.getItem('lowpricemarket_profile_images')) || {},
+                    prices: JSON.parse(localStorage.getItem('lowpricemarket_prices')) || {gmail: 10, facebook: 5, instagram: 5},
+                    workStatus: JSON.parse(localStorage.getItem('lowpricemarket_work_status')) || {gmail: false, facebook: false, instagram: false},
+                    telegramLink: localStorage.getItem('lowpricemarket_telegram_link') || 'https://t.me/your_group_link',
+                    adminCredentials: JSON.parse(localStorage.getItem('adminCredentials')) || adminCredentials,
+                    exportDate: new Date().toISOString()
+                };
+                
+                // Convert to JSON string
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                // Create download link
+                const exportFileDefaultName = `life_money_earn_zone_bd_data_${new Date().toISOString().split('T')[0]}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showToast('Data exported successfully!', 'success');
+            });
+            
+            // Import Data
+            document.getElementById('importData').addEventListener('click', function() {
+                document.getElementById('importModal').style.display = 'flex';
+            });
+            
+            document.getElementById('cancelImport').addEventListener('click', function() {
+                document.getElementById('importModal').style.display = 'none';
+                document.getElementById('importFileInput').value = '';
+            });
+            
+            document.getElementById('confirmImport').addEventListener('click', function() {
+                const fileInput = document.getElementById('importFileInput');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    showToast('Please select a file', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+                        
+                        // Validate import data
+                        if (!importData.users || !Array.isArray(importData.users)) {
+                            throw new Error('Invalid data format');
+                        }
+                        
+                        // Import data
+                        if (confirm('This will replace ALL current data. Are you sure?')) {
+                            localStorage.setItem('lowpricemarket_users', JSON.stringify(importData.users || []));
+                            localStorage.setItem('lowpricemarket_activation_requests', JSON.stringify(importData.activationRequests || []));
+                            localStorage.setItem('lowpricemarket_submissions', JSON.stringify(importData.submissions || []));
+                            localStorage.setItem('lowpricemarket_withdraw_requests', JSON.stringify(importData.withdrawRequests || []));
+                            localStorage.setItem('lowpricemarket_profile_images', JSON.stringify(importData.profileImages || {}));
+                            
+                            if (importData.prices) {
+                                localStorage.setItem('lowpricemarket_prices', JSON.stringify(importData.prices));
+                            }
+                            
+                            if (importData.workStatus) {
+                                localStorage.setItem('lowpricemarket_work_status', JSON.stringify(importData.workStatus));
+                            }
+                            
+                            if (importData.telegramLink) {
+                                localStorage.setItem('lowpricemarket_telegram_link', importData.telegramLink);
+                            }
+                            
+                            if (importData.adminCredentials) {
+                                localStorage.setItem('adminCredentials', JSON.stringify(importData.adminCredentials));
+                            }
+                            
+                            document.getElementById('importModal').style.display = 'none';
+                            document.getElementById('importFileInput').value = '';
+                            
+                            showToast('Data imported successfully!', 'success');
+                            
+                            // Reload data
+                            loadDashboardData();
+                            loadAllUsers();
+                            loadActivationRequests();
+                            loadSubmissions();
+                            loadWithdrawRequests();
+                            loadWorkControlSettings();
+                            loadPriceControlSettings();
+                            loadTelegramLink();
+                        }
+                    } catch (error) {
+                        showToast('Error importing data: Invalid file format', 'error');
+                    }
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            // Search functionality
+            document.getElementById('userSearch').addEventListener('input', function() {
+                loadAllUsers(this.value);
+            });
+            
+            document.getElementById('activationSearch').addEventListener('input', function() {
+                loadActivationRequests(this.value);
+            });
+            
+            document.getElementById('submissionSearch').addEventListener('input', function() {
+                loadSubmissions(this.value);
+            });
+            
+            document.getElementById('withdrawSearch').addEventListener('input', function() {
+                loadWithdrawRequests(this.value);
+            });
+            
+            // Filter buttons for submissions
+            document.getElementById('filterAll').addEventListener('click', function() {
+                loadSubmissions('', 'all');
+            });
+            
+            document.getElementById('filterGmail').addEventListener('click', function() {
+                loadSubmissions('', 'gmail');
+            });
+            
+            document.getElementById('filterFacebook').addEventListener('click', function() {
+                loadSubmissions('', 'facebook');
+            });
+            
+            document.getElementById('filterInstagram').addEventListener('click', function() {
+                loadSubmissions('', 'instagram');
+            });
+            
+            // Initialize the admin panel
+            checkAdminLoginStatus();
+            
+            // Auto-refresh data every 10 seconds
+            setInterval(() => {
+                if (localStorage.getItem('adminLoggedIn') === 'true') {
+                    const activePage = document.querySelector('.page.active').id;
+                    loadPageData(activePage);
+                }
+            }, 10000);
+        });
+    </script>
+</body>
+</html>
